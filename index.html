@@ -1,0 +1,587 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RenewHUB — Dark, Relaxed UI (Option A)</title>
+  <meta name="description" content="RenewHUB — dark theme, parallax, stuck splash, crisp charts and relaxed layout." />
+  <style>
+    :root{
+      --bg:#061126;
+      --card-radius:16px;
+      --accent:#6ee7b7;
+      --accent-2:#7c5cff;
+      --muted: rgba(233,244,251,0.78);
+      --soft: rgba(255,255,255,0.03);
+      --ease: cubic-bezier(.2,.9,.2,1);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "SF Pro Text", Roboto, Arial;
+      background: linear-gradient(180deg,#04101a 0%, #061126 70%);
+      color:var(--muted);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+      scroll-behavior:smooth;
+    }
+
+    /* ---------------- LOGIN PAGE ---------------- */
+    .login-page{
+      position:fixed; inset:0; z-index:10000; display:grid; place-items:center;
+      background: linear-gradient(180deg, rgba(2,6,14,0.98), rgba(4,12,22,0.9));
+      pointer-events:auto;
+    }
+    .login-inner{display:grid;place-items:center;gap:24px;text-align:center;max-width:380px;width:92%;padding:36px}
+    .login-logo{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#021025;font-weight:900;font-size:32px;box-shadow:0 22px 80px rgba(124,92,255,0.12);margin:0 auto}
+    .login-inner h2{margin:0;font-size:28px;color:var(--muted);font-weight:700}
+    .login-inner p{margin:0 0 24px;opacity:.85;font-size:15px}
+    
+    .login-field{
+      width:100%; padding:14px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);
+      background:var(--soft); color:var(--muted); font-size:15px;
+      backdrop-filter: blur(8px); transition: all .3s var(--ease);
+    }
+    .login-field:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(110,231,183,0.12)}
+    .login-field::placeholder{color:rgba(233,244,251,0.5)}
+    
+    .login-btn{
+      padding:14px 24px; border-radius:12px; border:0; 
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:#021025; font-weight:700; font-size:15px; cursor:pointer;
+      box-shadow:0 12px 40px rgba(124,92,255,0.12);
+      transition: all .4s var(--ease);
+    }
+    .login-btn:hover{transform:translateY(-2px); box-shadow:0 18px 60px rgba(124,92,255,0.18)}
+    .login-btn:active{transform:translateY(0)}
+    
+    .login-links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+    .login-link{color:var(--accent);font-size:13px;text-decoration:none;font-weight:500;cursor:pointer}
+    .login-link:hover{text-decoration:underline}
+    
+    .demo-mode{font-size:12px;color:rgba(233,244,251,0.7);margin-top:12px}
+
+    /* ---------------- SPLASH ---------------- */
+    .splash{
+      position:fixed; inset:0; z-index:9999; display:grid; place-items:center;
+      background: linear-gradient(180deg, rgba(2,6,14,0.98), rgba(4,12,22,0.9));
+      pointer-events:auto;
+    }
+    .splash-inner{display:grid;place-items:center;gap:12px;z-index:5;text-align:center}
+    .logo-mark{width:88px;height:88px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#021025;font-weight:900;font-size:36px;box-shadow:0 22px 80px rgba(124,92,255,0.12)}
+    .splash h2{margin:0;font-size:22px;color:var(--muted)}
+    .splash p{margin:0;opacity:.85;font-size:14px}
+    .hint{font-size:13px;opacity:.9;color:rgba(233,244,251,0.82)}
+
+    .splash-backdrop{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+    .splash-backdrop svg{position:absolute;left:50%;transform:translateX(-50%);bottom:-8%;width:160%;filter:blur(22px);opacity:0.12}
+    .particle{position:absolute;width:6px;height:26px;border-radius:4px;background:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(255,255,255,0.2));opacity:.03}
+
+    /* ---------------- TOP BAR & LAYOUT ---------------- */
+    header{position:fixed;top:18px;left:50%;transform:translateX(-50%);width:92%;max-width:1100px;z-index:60}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand .mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#021025;font-weight:800}
+    .actions{display:flex;gap:8px;align-items:center}
+    .search{padding:10px 12px;border-radius:12px;background:var(--soft);border:1px solid rgba(255,255,255,0.04);backdrop-filter: none;width:280px;color:var(--muted)}
+    .search::placeholder{color:rgba(233,244,251,0.5)}
+    .logout-btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--soft);color:var(--muted);font-size:13px;cursor:pointer}
+
+    main{padding-top:110px;min-height:100vh}
+
+    .hero{position:relative;height:68vh;min-height:480px;display:flex;align-items:center;justify-content:center;padding:36px 20px;overflow:visible}
+    .parallax-layer{position:absolute;inset:0;pointer-events:none;z-index:1}
+
+    .layout{width:92%;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:34px;align-items:start;z-index:5;position:relative}
+
+    .glass{
+      background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--card-radius);
+      padding:24px;
+      border:1px solid rgba(255,255,255,0.035);
+      box-shadow: 0 14px 48px rgba(1,6,15,0.6);
+      backdrop-filter: blur(6px) saturate(110%);
+      transform-origin:center;
+      transition: transform .45s var(--ease), box-shadow .35s var(--ease);
+      will-change:transform;
+    }
+    .glass.spring{transition: transform .6s cubic-bezier(.2,1.1,.2,1);}
+    .glass:hover{transform:translateY(-10px);box-shadow:0 30px 80px rgba(1,6,15,0.7)}
+
+    .subs{display:flex;flex-direction:column;gap:12px}
+    .card-row{
+      display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.008), rgba(255,255,255,0.006));
+      border:1px solid rgba(255,255,255,0.025);
+      transition: transform .28s var(--ease), box-shadow .28s var(--ease);
+    }
+    .card-row:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(6,12,20,0.62)}
+
+    .neon{position:relative;color:var(--accent);cursor:pointer;border-radius:10px;padding:8px 12px;border:1px solid transparent}
+    .neon:hover{color:#fff;box-shadow:0 10px 40px rgba(124,92,255,0.08)}
+
+    .bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:90;background:linear-gradient(180deg, rgba(10,14,22,0.6), rgba(6,10,18,0.5));padding:8px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);display:flex;gap:10px;box-shadow:0 12px 36px rgba(2,6,23,0.6)}
+    .nav-btn{padding:10px 14px;border-radius:12px;background:transparent;border:none;color:var(--muted);cursor:pointer}
+    .nav-btn.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#021025;font-weight:700;box-shadow:0 8px 30px rgba(124,92,255,0.12)}
+
+    .fab{position:fixed;right:28px;bottom:92px;z-index:92;padding:16px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;color:#021025;font-weight:800;box-shadow:0 18px 60px rgba(124,92,255,0.12);cursor:pointer}
+
+    .wave-wrap{position:absolute;left:0;right:0;bottom:0;height:44vh;pointer-events:none;z-index:0}
+    .wave{position:absolute;left:50%;transform:translateX(-50%);width:160%;min-width:1000px;opacity:0.9;filter:blur(10px);mix-blend-mode:overlay}
+
+    .chart-wrap{
+      background: transparent;
+      padding:6px 0;
+      border-radius:10px;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    canvas{display:block;width:100% !important;height:160px !important}
+
+    .small{font-size:13px;color:rgba(233,244,251,0.82)}
+    .muted{color:rgba(233,244,251,0.64);font-size:13px}
+
+    @media (max-width:920px){
+      .layout{grid-template-columns:1fr;gap:18px;padding:0 8px}
+      .search{width:160px}
+      .fab{right:18px;bottom:78px}
+      .login-inner{padding:24px}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .glass, .particle{transition:none;animation:none}
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGIN PAGE -->
+  <div class="login-page" id="loginPage">
+    <div class="login-backdrop" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden">
+      <svg viewBox="0 0 1440 320" preserveAspectRatio="none" style="position:absolute;left:50%;transform:translateX(-50%);bottom:-8%;width:160%;filter:blur(22px);opacity:0.12">
+        <path fill="#05243a" d="M0,160L48,149.3C96,139,192,117,288,112C384,107,480,117,576,144C672,171,768,213,864,234.7C960,256,1056,256,1152,250.7C1248,245,1344,235,1392,229.3L1440,224L1440,320L0,320Z"></path>
+      </svg>
+    </div>
+    
+    <div class="login-inner" role="dialog" aria-label="Login to RenewHUB">
+      <div class="login-logo">R</div>
+      <h2>Welcome back</h2>
+      <p>Sign in to manage your subscriptions</p>
+      
+      <input class="login-field" type="email" id="loginEmail" placeholder="Email address" aria-label="Email" />
+      <input class="login-field" type="password" id="loginPassword" placeholder="Password" aria-label="Password" />
+      
+      <button class="login-btn" id="loginBtn">Sign In</button>
+      
+      <div class="login-links">
+        <span class="login-link" onclick="showDemoMode()">Demo Mode</span>
+        <span class="login-link">Forgot password?</span>
+      </div>
+      
+      <div class="demo-mode">Demo: demo@renewhub.com / demo123</div>
+    </div>
+  </div>
+
+  <!-- SPLASH (hidden initially) -->
+  <div class="splash" id="splash" style="display:none">
+    <div class="splash-backdrop" aria-hidden="true">
+      <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+        <path fill="#05243a" d="M0,160L48,149.3C96,139,192,117,288,112C384,107,480,117,576,144C672,171,768,213,864,234.7C960,256,1056,256,1152,250.7C1248,245,1344,235,1392,229.3L1440,224L1440,320L0,320Z"></path>
+      </svg>
+    </div>
+
+    <div class="splash-inner" role="dialog" aria-label="Welcome">
+      <div class="logo-mark">R</div>
+      <h2>RenewHUB</h2>
+      <p>Smart renewals — gather everything in one place</p>
+      <div class="hint">Press <strong>Enter</strong> to continue</div>
+    </div>
+  </div>
+
+  <!-- MAIN APP (hidden initially) -->
+  <header id="header" style="display:none">
+    <div class="topbar">
+      <div class="brand">
+        <div class="mark">R</div>
+        <div>
+          <h1 style="margin:0">RenewHUB</h1>
+          <div class="muted">Manage subscriptions • autopay • budget suggestions</div>
+        </div>
+      </div>
+      <div class="actions">
+        <input class="search" placeholder="Search subscriptions..." aria-label="Search" />
+        <button class="neon" onclick="addSubscription()">+ Add</button>
+        <button class="logout-btn" id="logoutBtn" onclick="logoutUser()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="mainContent" style="display:none;padding-top:110px;min-height:100vh">
+    <div class="hero">
+      <div class="parallax-layer" data-speed="0.14"></div>
+      <div class="parallax-layer" data-speed="0.28"></div>
+
+      <div class="layout" id="layout">
+        <div class="glass spring" id="leftPanel">
+          <h2 style="margin:0 0 8px 0">Autopay Manager</h2>
+          <div class="small" style="margin-bottom:12px">Control autopay and upcoming renewals.</div>
+          <div class="subs" id="subscriptionList"></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div class="glass spring">
+            <h3 style="margin:0 0 8px 0">Payment Methods</h3>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+              <div style="flex:1" class="small">Visa • **** 4242</div>
+              <div class="muted">Primary</div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="autopayChart"></canvas>
+            </div>
+            <div id="autopaySection" class="muted" style="margin-top:8px">No autopay enabled.</div>
+          </div>
+
+          <div class="glass spring">
+            <h3 style="margin:0 0 8px 0">Budget Suggestions</h3>
+            <div class="chart-wrap">
+              <canvas id="suggestionChart"></canvas>
+            </div>
+            <div id="suggestionBoard" class="muted" style="margin-top:8px">Loading suggestions...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wave-wrap">
+        <svg class="wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
+          <path fill="#05243a" d="M0,160L48,149.3C96,139,192,117,288,112C384,107,480,117,576,144C672,171,768,213,864,234.7C960,256,1056,256,1152,250.7C1248,245,1344,235,1392,229.3L1440,224L1440,320L0,320Z"></path>
+        </svg>
+      </div>
+    </div>
+
+    <section style="padding:80px 0 110px 0;border-top:1px solid rgba(255,255,255,0.02)">
+      <div style="width:92%;max-width:1100px;margin:0 auto">
+        <div class="glass spring">
+          <h2 style="margin:0 0 10px 0">Payment Dashboard</h2>
+          <div class="chart-wrap"><canvas id="paymentChart" style="height:180px"></canvas></div>
+          <div id="paymentDashboard" class="muted" style="margin-top:12px">No payments yet.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="bottom-nav" id="bottomNav" style="display:none">
+    <button class="nav-btn active">🏠 Home</button>
+    <button class="nav-btn">💳 Payments</button>
+    <button class="nav-btn">📊 Insights</button>
+    <button class="nav-btn">⚙ Settings</button>
+  </div>
+
+  <button class="fab" id="fab" onclick="addSubscription()" style="display:none">+ Add</button>
+
+  <!-- ChartJS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Global variables
+    let isLoggedIn = false;
+    let currentUser = null;
+    let subs = [];
+    let payments = [];
+    let autoChart, payChart, suggChart;
+    const demoCreds = { email: 'demo@renewhub.com', password: 'demo123' };
+
+    // Chart defaults
+    if (window.Chart) {
+      Chart.defaults.devicePixelRatio = window.devicePixelRatio || 1;
+      Chart.defaults.font.size = 13;
+      Chart.defaults.color = 'rgba(233,244,251,0.92)';
+    }
+
+    // Storage functions
+    function saveData() {
+      if (currentUser) {
+        localStorage.setItem('renewhub_user', currentUser.email);
+        localStorage.setItem(`subs_${currentUser.email}`, JSON.stringify(subs));
+        localStorage.setItem(`pay_${currentUser.email}`, JSON.stringify(payments));
+      }
+      renderApp();
+    }
+
+    function loadData() {
+      if (currentUser) {
+        subs = JSON.parse(localStorage.getItem(`subs_${currentUser.email}`) || '[]');
+        payments = JSON.parse(localStorage.getItem(`pay_${currentUser.email}`) || '[]');
+      }
+      renderApp();
+    }
+
+    // Login functions
+    function showDemoMode() {
+      document.getElementById('loginEmail').value = demoCreds.email;
+      document.getElementById('loginPassword').value = demoCreds.password;
+    }
+
+    function loginUser() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      
+      if (!email || !password) {
+        alert('Please enter email and password');
+        return;
+      }
+      
+      if (email === demoCreds.email && password === demoCreds.password) {
+        currentUser = { email };
+        isLoggedIn = true;
+        showMainApp();
+        loadData();
+      } else {
+        alert('Invalid credentials. Try demo: demo@renewhub.com / demo123');
+      }
+    }
+
+    function logoutUser() {
+      isLoggedIn = false;
+      currentUser = null;
+      document.getElementById('loginPage').style.display = 'grid';
+      document.getElementById('splash').style.display = 'none';
+      document.getElementById('header').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('bottomNav').style.display = 'none';
+      document.getElementById('fab').style.display = 'none';
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('loginPassword').value = '';
+    }
+
+    function showMainApp() {
+      document.getElementById('loginPage').style.display = 'none';
+      setTimeout(() => {
+        document.getElementById('splash').style.display = 'grid';
+        spawnParticles(20);
+        setTimeout(hideSplash, 1200);
+      }, 300);
+      
+      setTimeout(() => {
+        document.getElementById('header').style.display = 'block';
+        document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('bottomNav').style.display = 'flex';
+        document.getElementById('fab').style.display = 'block';
+      }, 1800);
+    }
+
+    // Subscription functions
+    function addSubscription() {
+      const name = prompt('Subscription name?');
+      if (!name) return;
+      const priceStr = prompt('Monthly price (number)?');
+      const price = parseFloat(priceStr);
+      if (isNaN(price)) return alert('Invalid price');
+      const cycle = prompt('Billing cycle (monthly/yearly)?') || 'monthly';
+      subs.push({id: Date.now(), name, price, cycle, autopay: false, active: true});
+      saveData();
+      springBounce(document.querySelector('.fab'));
+    }
+
+    function toggleAutopay(id) {
+      const sub = subs.find(s => s.id === id);
+      if (sub) {
+        sub.autopay = !sub.autopay;
+        saveData();
+      }
+    }
+
+    function recordPayment(id) {
+      const sub = subs.find(s => s.id === id);
+      if (sub) {
+        payments.push({sub: sub.name, amount: sub.price, time: new Date().toLocaleString()});
+        saveData();
+      }
+    }
+
+    function cancelSub(id) {
+      const sub = subs.find(s => s.id === id);
+      if (sub) {
+        sub.active = !sub.active;
+        saveData();
+      }
+    }
+
+    // Chart rendering
+    function renderCharts() {
+      const autoSubs = subs.filter(s => s.autopay);
+      const autoLabels = autoSubs.map(s => s.name);
+      const autoData = autoSubs.map(s => s.price);
+
+      if (autoChart) autoChart.destroy();
+      autoChart = new Chart(document.getElementById('autopayChart'), {
+        type: 'doughnut',
+        data: { 
+          labels: autoLabels, 
+          datasets: [{ 
+            data: autoData, 
+            backgroundColor: ['#6ee7b7','#7c5cff','#00c2ff','#ffd166'] 
+          }] 
+        },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          plugins: {legend: {display: false}}, 
+          layout: {padding: 6} 
+        }
+      });
+
+      const totals = {};
+      payments.forEach(p => totals[p.sub] = (totals[p.sub] || 0) + p.amount);
+      const payLabels = Object.keys(totals);
+      const payData = Object.values(totals);
+
+      if (payChart) payChart.destroy();
+      payChart = new Chart(document.getElementById('paymentChart'), {
+        type: 'bar',
+        data: { labels: payLabels, datasets: [{ data: payData }] },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          plugins: {legend: {display: false}}, 
+          scales: {
+            x: {grid: {display: false}},
+            y: {grid: {color: 'rgba(255,255,255,0.02)'}}
+          }, 
+          layout: {padding: 6} 
+        }
+      });
+
+      const prices = subs.map(s => s.price);
+      const labels = subs.map(s => s.name);
+      if (suggChart) suggChart.destroy();
+      suggChart = new Chart(document.getElementById('suggestionChart'), {
+        type: 'pie',
+        data: { labels, datasets: [{ data: prices }] },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          plugins: {legend: {display: false}}, 
+          layout: {padding: 6} 
+        }
+      });
+    }
+
+    // Main render function
+    function renderApp() {
+      const list = document.getElementById('subscriptionList');
+      if (!list) return;
+      
+      list.innerHTML = subs.map(s => `
+        <div class="card-row" role="group" aria-label="${s.name}">
+          <div>
+            <div style="font-weight:700">${s.name}</div>
+            <div class="muted">₹${s.price} • ${s.cycle} • ${s.active ? 'Active' : 'Cancelled'}</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px">
+              <input type="checkbox" ${s.autopay ? 'checked' : ''} onchange="toggleAutopay(${s.id})"> Autopay
+            </label>
+            <button class="neon" onclick="recordPayment(${s.id})">Pay</button>
+            <button class="neon" onclick="cancelSub(${s.id})">${s.active ? 'Cancel' : 'Reactivate'}</button>
+          </div>
+        </div>
+      `).join('') || '<div class="muted">No subscriptions yet — tap Add to get started.</div>';
+
+      document.getElementById('autopaySection').innerHTML = 
+        subs.filter(s => s.autopay).map(s => `⚡ ${s.name} — ₹${s.price}`).join('') || 'No autopay enabled.';
+      
+      document.getElementById('paymentDashboard').innerHTML = 
+        payments.map(p => `💳 ${p.sub} — ₹${p.amount}<br><small>${p.time}</small>`).join('<br><br>') || 'No payments yet.';
+      
+      document.getElementById('suggestionBoard').innerHTML = 
+        subs.filter(s => s.price > 300).map(s => `⚠ ${s.name} is pricy (₹${s.price}). Consider alternatives.`).join('') || 
+        'Your subscriptions fit well in your budget.';
+
+      renderCharts();
+    }
+
+    // Animations
+    function springBounce(el) {
+      if (!el) return;
+      el.animate([
+        { transform: 'scale(0.92)' },
+        { transform: 'scale(1.06)' },
+        { transform: 'scale(0.98)' },
+        { transform: 'scale(1)' }
+      ], { duration: 520, easing: 'cubic-bezier(.2,1.1,.2,1)' });
+    }
+
+    function hideSplash() {
+      const splash = document.getElementById('splash');
+      if (!splash) return;
+      splash.style.transition = 'opacity 420ms var(--ease), transform 420ms var(--ease)';
+      splash.style.opacity = '0';
+      splash.style.transform = 'scale(.98) translateY(-6px)';
+      setTimeout(() => { splash.style.display = 'none'; }, 460);
+    }
+
+    function spawnParticles(n = 20) {
+      const parent = document.querySelector('.splash-backdrop') || document.body;
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      
+      for (let i = 0; i < n; i++) {
+        const el = document.createElement('div');
+        el.className = 'particle';
+        const angle = Math.random() * Math.PI * 2;
+        const r = Math.random() * Math.max(window.innerWidth, window.innerHeight) * 0.45;
+        el.style.left = (cx + Math.cos(angle) * r) + 'px';
+        el.style.top = (cy + Math.sin(angle) * r) + 'px';
+        parent.appendChild(el);
+        animateParticle(el, cx, cy);
+        setTimeout(() => { if (el.parentNode) el.remove(); }, 2000);
+      }
+    }
+
+    function animateParticle(el, cx, cy) {
+      const lx = parseFloat(el.style.left);
+      const ly = parseFloat(el.style.top);
+      const dx = (cx - lx) * (0.96 + Math.random() * 0.14);
+      const dy = (cy - ly) * (0.96 + Math.random() * 0.14);
+      const dur = 1100 + Math.random() * 800;
+      el.animate([
+        { transform: 'translate(0,0) scale(1)', opacity: 0.03 },
+        { transform: `translate(${dx}px,${dy}px) scale(.06)`, opacity: 0.9 }
+      ], { duration: dur, easing: 'cubic-bezier(.2,.9,.2,1)' });
+    }
+
+    // Parallax
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      document.querySelectorAll('.parallax-layer').forEach(layer => {
+        const speed = parseFloat(layer.getAttribute('data-speed')) || 0.14;
+        layer.style.transform = `translateY(${scrolled * speed}px)`;
+      });
+    }, { passive: true });
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check for existing session
+      const savedUser = localStorage.getItem('renewhub_user');
+      if (savedUser) {
+        currentUser = { email: savedUser };
+        isLoggedIn = true;
+        showMainApp();
+        loadData();
+      }
+
+      document.getElementById('loginBtn').addEventListener('click', loginUser);
+      
+      document.addEventListener('keydown', (e) => {
+        if (document.getElementById('loginPage') && e.key === 'Enter') {
+          loginUser();
+        }
+        if (isLoggedIn && e.key === 'n') {
+          addSubscription();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
